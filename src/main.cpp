@@ -1,340 +1,29 @@
-
-//#include "dejavu.hpp"
-
-//#include "navigator.hpp"
-
 /*
-#include "scene_split_merge.hpp"
+Copyright (c) Helio Perroni Filho <xperroni@gmail.com>
 
-void test_scene_split_merge() {
-    cv::Mat bgr = images::load("/home/helio/Projects/Data/Landmarks/stop-0-0-6-still.png");
+This file is part of Dejavu.
 
-    Scene scene(bgr);
-    for (ListIteratorConst<cv::Rect> i(scene.segments); i.more();) {
-        const cv::Rect &rect = i.next();
-        cv::rectangle(bgr, rect, cv::Scalar(0, 0, 255));
-    }
+Dejavu is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    viewer::show("image", bgr);
-    cv::waitKey();
-}
+Dejavu is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Dejavu. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "methods.hpp"
-
-#include <boost/cstdint.hpp>
-
-#include <limits>
-
-double distance(uint32_t a, uint32_t b) {
-    return __builtin_popcount(a ^ b);
-}
-
-uint32_t gray_code(int32_t value) {
-    uint32_t a = ((long) value) - ((long) std::numeric_limits<int32_t>::min());
-    return (a >> 1) ^ a;
-}
-
-void test_mc_code() {
-    const double n = 600;
-    const double a = std::numeric_limits<int>::min();
-    const double z = std::numeric_limits<int>::max();
-    const double t = (z - a) / (n - 1);
-
-    cv::Mat d_g(n, n, CV_64F);
-    //cv::Mat d_m(n, n, CV_64F);
-    cv::Mat d_n(n, n, CV_64F);
-    for (double i = 0; i < n; i++) {
-        for (double j = 0; j < n; j++) {
-            d_g.at<double>(i, j) = distance(gray_code(t * i + a), gray_code(t * j + a));
-            //d_m.at<double>(i, j) = distance(dejavu::mc_code(t * i + a), dejavu::mc_code(t * j + a));
-            d_n.at<double>(i, j) = 255 - t * (std::max(i, j) - std::min(i, j));
-        }
-    }
-
-    viewer::show("Distances (N)", colors::discrete(d_n));
-    viewer::show("Distances (Gray)", colors::discrete(d_g));
-    //viewer::show("Distances (MC)", colors::discrete(d_m));
-    cv::waitKey();
-
-    images::save(colors::discrete(d_n), "/home/helio/Pictures/n.png");
-    images::save(colors::discrete(d_g), "/home/helio/Pictures/g.png");
-}
-
-int demo_grayscale(int argc, char *argv[]) {
-    std::string tag = "shift-50";
-    int w = 25;
-
-    std::string yaw = "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-";
-    std::string shift = "/home/helio/Roboken/Data/Straight/2014-06-17-shift-";
-
-    plot_grayscale(yaw + "01-00", tag, ".png", w);
-    plot_grayscale(shift + "01--10", tag, ".png", w);
-    plot_grayscale(shift + "01-10", tag, ".png", w);
-    plot_grayscale(shift + "01--25", tag, ".png", w);
-    plot_grayscale(shift + "01-25", tag, ".png", w);
-    plot_grayscale(shift + "01--50", tag, ".png", w);
-    plot_grayscale(shift + "01-50", tag, ".png", w);
-
-    plot_grayscale(yaw + "02-00", tag, ".png", w);
-    plot_grayscale(yaw + "02-02", tag, ".png", w);
-    plot_grayscale(yaw + "02-05", tag, ".png", w);
-    plot_grayscale(shift + "02--25", tag, ".png", w);
-    plot_grayscale(shift + "02-25", tag, ".png", w);
-    plot_grayscale(shift + "02--50", tag, ".png", w);
-    plot_grayscale(shift + "02-50", tag, ".png", w);
-/*
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01-0", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01-2", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01--2", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01-5", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01--5", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01-10", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-01--10", tag, ".png", w);
-
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02-0", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02-2", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02--2", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02-5", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02--5", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02-10", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-05-29-02--10", tag, ".png", w);
-
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-04-23-01", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-04-23-05", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-04-23-07", tag, ".png", w);
-
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-yaw-05-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-yaw-06-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-01-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-02-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-03-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-04-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-05-00", tag, ".png", w);
-    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-06-00", tag, ".png", w);
-*/
-//    plot_grayscale("/home/helio/Roboken/Data/Straight/2014-07-17-yaw-01-02", "shift-50", ".png", w);
-
-    return 0;
-}
-
-int review_runs(int argc, char *argv[]) {
-    std::string width = "shift-50";
-    int size = 25;
-
-    std::string shift = "/home/helio/Roboken/Data/Straight/2014-06-17-shift-";
-    std::string yaw = "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-";
-/*
-    std::string shift2 = "/home/helio/Roboken/Data/Straight/2014-06-18-shift-";
-    std::string yaw2 = "/home/helio/Roboken/Data/Straight/2014-06-18-yaw-";
-    plot_eye_buffer(yaw2 + "01-00", width, ".png", size);
-    plot_eye_buffer(shift2 + "01-100", width, ".png", size);
-    plot_eye_buffer(shift2 + "01-200", width, ".png", size);
-*/
-/*
-    plot_eye_buffer(yaw + "01-00", width, ".png", size);
-    plot_eye_buffer(shift + "01--10", width, ".png", size);
-    plot_eye_buffer(shift + "01-10", width, ".png", size);
-    plot_eye_buffer(shift + "01--25", width, ".png", size);
-    plot_eye_buffer(shift + "01-25", width, ".png", size);
-    plot_eye_buffer(shift + "01--50", width, ".png", size);
-    plot_eye_buffer(shift + "01-50", width, ".png", size);
-
-    plot_eye_buffer(yaw + "02-00", width, ".png", size);
-    plot_eye_buffer(yaw + "02-02", width, ".png", size);
-    plot_eye_buffer(yaw + "02-05", width, ".png", size);
-    plot_eye_buffer(shift + "02--25", width, ".png", size);
-    plot_eye_buffer(shift + "02-25", width, ".png", size);
-    plot_eye_buffer(shift + "02--50", width, ".png", size);
-    plot_eye_buffer(shift + "02-50", width, ".png", size);
-
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01-0", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01-2", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01--2", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01-5", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01--5", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01-10", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-01--10", width, ".png", size);
-*/
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02-0", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02-2", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02--2", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02-5", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02--5", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02-10", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-05-29-02--10", width, ".png", size);
-/*
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-04-23-01", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-04-23-05", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-04-23-07", width, ".png", size);
-
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-yaw-05-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-yaw-06-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-01-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-02-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-03-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-04-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-05-00", width, ".png", size);
-    plot_eye_buffer("/home/helio/Roboken/Data/Straight/2014-07-08-retrace-06-00", width, ".png", size);
-*/
-    return 0;
-}
-
-#include "drift_search.hpp"
+#include <clarus/core/list.hpp>
 using clarus::List;
-using clarus::Point;
-using dejavu::DriftSearch;
 
-#include <iostream>
-#include <fstream>
+#include <clarus/io/viewer.hpp>
 
-void compare_runs(
-    const std::string &tag, double u,
-    const std::string &folder1,
-    const std::string &folder2
-) {
-    std::cout << folder2 << "/" << tag << std::endl;
-
-    DriftSearch searcher(25, u, folder1, folder2);
-
-    std::string path = folder2 + "/" + tag + ".txt";
-    std::ofstream out(path.c_str());
-    while (searcher.more()) {
-        cv::Mat drifts = searcher.search(30);
-        if (drifts.rows == 0) {
-            continue;
-        }
-
-        std::cout << drifts << std::endl;
-        out << drifts << std::endl;
-    }
-}
-
-int compare_runs(int argc, char *argv[]) {
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-02-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-02-50"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-02-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-02--50"
-    );
-
-/*
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-01-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-01-10"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-01-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-01--10"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-01-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-01-25"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-01-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-01--25"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-01-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-01-50"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-06-17-yaw-01-00",
-        "/home/helio/Roboken/Data/Straight/2014-06-17-shift-01--50"
-    );
-*/
-/*
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-2"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01--2"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-5"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01--5"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-10"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-01--10"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-2"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-5"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-10"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02--2"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02--5"
-    );
-
-    compare_runs(
-        "template-125", 1.25,
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02-0",
-        "/home/helio/Roboken/Data/Straight/2014-05-29-02--10"
-    );
-*/
-    return 0;
-}
+#include <clarus/vision/depths.hpp>
+#include <clarus/vision/images.hpp>
 
 #include <cight/drift_estimator.hpp>
 using cight::Estimator;
@@ -342,25 +31,90 @@ using cight::Estimator;
 #include <cight/drift_reduce.hpp>
 using cight::reduce_slip;
 
-#include <cight/replay_stream.hpp>
-using cight::ReplayStream;
+#include <cight/feature_selector.hpp>
+using cight::Selector;
 
-int demo_estimator(int argc, char *argv[]) {
-    ReplayStream original("/home/helio/Roboken/Data/Straight/2014-05-29-01-0");
-    Estimator estimator(50, 5, 25, 25, original);
+#include <cight/video_stream.hpp>
+using cight::SensorStream;
+using cight::VideoStream;
 
-    ReplayStream retrace("/home/helio/Roboken/Data/Straight/2014-05-29-01-10");
-    reduce_slip reduce;
-    while (retrace.active()) {
-        cv::Mat responses = estimator(retrace);
-        std::cout << responses << std::endl;
-        //int index = reduce(estimator(retrace));
-        //std::cout << index << std::endl;
+#include <cight/visual_matcher.hpp>
+using cight::StreamMatcher;
+using cight::VisualMatcher;
+
+#include <boost/bind.hpp>
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+void test_interpolator(const std::string &path) {
+    cv::Mat similarities = depths::load(path);
+    cv::Point3f line = cight::interpolateHough(similarities);
+    const cv::Point a = cight::lineP0(line);
+    const cv::Point b = cight::linePn(line, similarities.size());
+
+    std::cerr << a << ", " << b << std::endl;
+
+    cv::Mat bgr = depths::bgr(similarities);
+    cv::line(bgr, a, b, cv::Scalar(0, 0, 0));
+    viewer::show("Similarities", images::scale(bgr, cv::Size(300, 300)));
+    cv::waitKey();
+}
+
+void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
+    VideoStream teachStream(teachPath, 20);
+    VideoStream replayStream(replayPath, 20);
+/*
+    cv::GoodFeaturesToTrackDetector detector(20, 0.01, 30);
+    Selector cornerSelector = boost::bind(cight::selectGoodFeatures, boost::ref(detector), _1, _2);
+    Selector selector = boost::bind(cight::selectBorders, cornerSelector, 0.5, _1, _2);
+*/
+    cv::GoodFeaturesToTrackDetector detector(10, 0.01, 30);
+    Selector selector = boost::bind(cight::selectGoodFeatures, boost::ref(detector), _1, _2);
+
+    VisualMatcher matcher(
+        teachStream, replayStream, cv::Size(10, 25),
+        selector, 30, 30,
+        cight::interpolateSlide
+    );
+
+    matcher.fillTeachBuffer();
+    matcher.fillReplayBuffer();
+    matcher.computeMatching();
+
+    Estimator estimator(50, 5, 25, matcher);
+    std::ofstream file("drift.txt");
+    reduce_slip drift;
+    for (std::string sep = "[";; sep = ",\n") {
+        cv::Mat responses = estimator();
+        if (responses.empty()) {
+            break;
+        }
+
+        file << sep << responses << std::flush;
+        std::cerr << drift(responses) << std::endl;
     }
 
-    return 0;
+    file << "]" << std::endl;
+}
+
+int dejavu_run(int argc, char *argv[]) {
+/*
+    if (argc < 3) {
+        std::cerr << "dejavu <teach path> <replay path>" << std::endl;
+    }
+
+    dejavu_run(argv[1], argv[2]);
+*/
+    dejavu_run(
+        "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-01-00/video.mpg",
+        "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-03-00/video.mpg"
+    );
+
+//    test_interpolator("/home/helio/Roboken/Data/Straight/2014-10-21-yaw-02-00/matches-2014-11-14-yaw-03-00/similarities.txt");
 }
 
 int main(int argc, char *argv[]) {
-    return demo_grayscale(argc, argv);
+    return dejavu_run(argc, argv);
 }
