@@ -79,8 +79,6 @@ void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
         cight::interpolateSlide
     );
 
-    matcher.fillTeachBuffer();
-    matcher.fillReplayBuffer();
     matcher.computeMatching();
 
     Estimator estimator(50, 5, 25, matcher);
@@ -100,19 +98,7 @@ void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
 }
 
 int dejavu_run(int argc, char *argv[]) {
-/*
-    if (argc < 3) {
-        std::cerr << "dejavu <teach path> <replay path>" << std::endl;
-    }
-
     dejavu_run(argv[1], argv[2]);
-*/
-    dejavu_run(
-        "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-01-00/video.mpg",
-        "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-03-00/video.mpg"
-    );
-
-//    test_interpolator("/home/helio/Roboken/Data/Straight/2014-10-21-yaw-02-00/matches-2014-11-14-yaw-03-00/similarities.txt");
 }
 
 int main(int argc, char *argv[]) {
