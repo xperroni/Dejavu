@@ -63,42 +63,50 @@ void test_interpolator(const std::string &path) {
 }
 
 void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
-    VideoStream teachStream(teachPath, 20);
-    VideoStream replayStream(replayPath, 20);
+    VideoStream teachStream(teachPath, 10);
+    VideoStream replayStream(replayPath, 10);
 /*
     cv::GoodFeaturesToTrackDetector detector(20, 0.01, 30);
     Selector cornerSelector = boost::bind(cight::selectGoodFeatures, boost::ref(detector), _1, _2);
     Selector selector = boost::bind(cight::selectBorders, cornerSelector, 0.5, _1, _2);
-*/
+
     cv::GoodFeaturesToTrackDetector detector(10, 0.01, 30);
     Selector selector = boost::bind(cight::selectGoodFeatures, boost::ref(detector), _1, _2);
+*/
+
+    cv::FastFeatureDetector detector(20);
+    Selector fastSelector = boost::bind(cight::selectFAST, boost::ref(detector), _1, _2);
+    Selector disjointSelector = boost::bind(cight::selectDisjoint, fastSelector, _1, _2);
+    Selector selector = boost::bind(cight::selectAtMost, disjointSelector, 10, _1, _2);
 
     VisualMatcher matcher(
         teachStream, replayStream, cv::Size(10, 25),
-        selector, 30, 30,
+        selector, 30, 80,
         cight::interpolateSlide
     );
 
     matcher.computeMatching();
 
-    Estimator estimator(50, 5, 25, matcher);
+    Estimator estimator(50, 5, 2, matcher);
     std::ofstream file("drift.txt");
     reduce_slip drift;
-    for (std::string sep = "[";; sep = ",\n") {
+    for (;;) {
         cv::Mat responses = estimator();
         if (responses.empty()) {
             break;
         }
 
-        file << sep << responses << std::flush;
+        file << responses << std::endl;
         std::cerr << drift(responses) << std::endl;
     }
-
-    file << "]" << std::endl;
 }
 
 int dejavu_run(int argc, char *argv[]) {
-    dejavu_run(argv[1], argv[2]);
+//    dejavu_run(argv[1], argv[2]);
+    dejavu_run(
+        "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-01-00/video.mpg",
+        "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-03-00/video.mpg"
+    );
 }
 
 int main(int argc, char *argv[]) {
