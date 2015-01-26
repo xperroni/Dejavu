@@ -1,5 +1,6 @@
 *.a
 *.o
+dejavu
 cmake_install.cmake
 CMakeCache.txt
 CMakeFiles
