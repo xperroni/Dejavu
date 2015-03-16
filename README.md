@@ -41,7 +41,11 @@ The build scripts expect to find the source files for [Cight](https://github.com
 Version History
 ---------------
 
-2015-01-26
+**2015-03-16**
+
+Apart from some experiments with new feature selectors this version brings nothing new. It was pushed just to clean the slate before I port my code base to ROS.
+
+**2015-01-26**
 
 A hopelessly belated and somewhat broken update, but better late than never. This version includes the new image pairing method described in [this report](https://github.com/xperroni/Yamabiko/blob/master/2014-2/Article/Image%20Stream%20Synchronization%20for%20Visual%20Navigation.pdf). In fact the actual implementation has progressed a little beyond what is reported here, and is currently in a state of flux, but it had been too long since I uploaded anything and I was growing weary of having no backup of this work. So there.
 
