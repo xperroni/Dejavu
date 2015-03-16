@@ -78,7 +78,12 @@ void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
     Selector fastSelector = boost::bind(cight::selectFAST, boost::ref(detector), _1, _2);
     Selector disjointSelector = boost::bind(cight::selectDisjoint, fastSelector, _1, _2);
     Selector selector = boost::bind(cight::selectAtMost, disjointSelector, 10, _1, _2);
-
+/*
+    cv::Mat empty;
+    Selector diffSelector = boost::bind(cight::selectDifference, boost::ref(empty), 127.0, _1, _2);
+    Selector disjointSelector = boost::bind(cight::selectDisjoint, diffSelector, _1, _2);
+    Selector selector = disjointSelector; // boost::bind(cight::selectAtMost, diffSelector, 10, _1, _2);
+*/
     VisualMatcher matcher(
         teachStream, replayStream, cv::Size(10, 25),
         selector, 30, 80,
@@ -87,8 +92,8 @@ void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
 
     matcher.computeMatching();
 
-    Estimator estimator(50, 5, 2, matcher);
-    std::ofstream file("drift.txt");
+    Estimator estimator(50, 5, 25, matcher);
+    std::ofstream file("shifts.txt");
     reduce_slip drift;
     for (;;) {
         cv::Mat responses = estimator();
@@ -102,11 +107,13 @@ void dejavu_run(const std::string &teachPath, const std::string &replayPath) {
 }
 
 int dejavu_run(int argc, char *argv[]) {
-//    dejavu_run(argv[1], argv[2]);
+    dejavu_run(argv[1], argv[2]);
+/*
     dejavu_run(
         "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-01-00/video.mpg",
         "/home/helio/Roboken/Data/Straight/2014-12-16-yaw-03-00/video.mpg"
     );
+*/
 }
 
 int main(int argc, char *argv[]) {
